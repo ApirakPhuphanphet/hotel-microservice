@@ -1,0 +1,84 @@
+syntax = "proto3";
+
+package room;
+
+option go_package = "room/proto;roompb";
+
+message Room {
+  string id = 1;
+  int64 number = 2;
+  string type = 3;
+  float price = 4;
+  repeated booking booking = 5;
+}
+
+message booking {
+  string date = 1;
+}
+
+message CreateRoomRequest {
+  Room room = 1;
+}
+
+message CreateRoomResponse {
+  Room room = 1;
+}
+
+message GetRoomRequest {
+  int64 number = 1;
+}
+
+message GetRoomResponse {
+  Room room = 1;
+}
+
+message GetAllRoomsRequest {}
+
+message GetAllRoomsResponse {
+  repeated Room rooms = 1;
+}
+
+message UpdatePriceRequest {
+  int64 number = 1;
+  float price = 2;
+}
+
+message UpdatePriceResponse {
+  Room room = 1;
+}
+
+message AddBookingRequest {
+  int64 number = 1;
+  booking booking = 2;
+}
+
+message AddBookingResponse {
+  Room room = 1;
+}
+
+message DeleteBookingRequest {
+  int64 number = 1;
+  string date = 2;
+}
+
+message DeleteBookingResponse {
+  Room room = 1;
+}
+
+message DeleteRoomRequest {
+  int64 number = 1;
+}
+
+message DeleteRoomResponse {
+  bool status = 1;
+}
+
+service RoomService {
+  rpc CreateRoom(CreateRoomRequest) returns (CreateRoomResponse);
+  rpc GetRoom(GetRoomRequest) returns (GetRoomResponse);
+  rpc GetAllRooms(GetAllRoomsRequest) returns (GetAllRoomsResponse);
+  rpc UpdatePrice(UpdatePriceRequest) returns (UpdatePriceResponse);
+  rpc AddBooking(AddBookingRequest) returns (AddBookingResponse);
+  rpc DeleteBooking(DeleteBookingRequest) returns (DeleteBookingResponse);
+  rpc DeleteRoom(DeleteRoomRequest) returns (DeleteRoomResponse);
+}
