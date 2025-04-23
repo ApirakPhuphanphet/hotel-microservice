@@ -69,12 +69,12 @@ func (s *RoomService) AddBooking(number int64, booking string) error {
 		return err
 	}
 	// Check if the booking date already exists
-	for _, b := range room.Boockings {
+	for _, b := range room.Bookings {
 		if b.Date == booking {
 			return errors.New("booking date already exists")
 		}
 	}
-	room.Boockings = append(room.Boockings, model.Boocking{Date: booking})
+	room.Bookings = append(room.Bookings, model.Booking{Date: booking})
 	err = s.repository.UpdateRoom(room.ID, room)
 	if err != nil {
 		return err
@@ -87,9 +87,9 @@ func (s *RoomService) CancelBooking(number int64, booking string) error {
 	if err != nil {
 		return err
 	}
-	for i, b := range room.Boockings {
+	for i, b := range room.Bookings {
 		if b.Date == booking {
-			room.Boockings = append(room.Boockings[:i], room.Boockings[i+1:]...)
+			room.Bookings = append(room.Bookings[:i], room.Bookings[i+1:]...)
 			break
 		}
 	}

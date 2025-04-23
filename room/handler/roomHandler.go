@@ -20,10 +20,10 @@ func NewRoomHandler(service *service.RoomService) *RoomGRPCHandler {
 
 func (h *RoomGRPCHandler) CreateRoom(ctx context.Context, req *roompb.CreateRoomRequest) (*roompb.CreateRoomResponse, error) {
 	room := model.Room{
-		Number:    req.Room.Number,
-		Type:      req.Room.Type,
-		Price:     req.Room.Price,
-		Boockings: []model.Boocking{},
+		Number:   req.Room.Number,
+		Type:     req.Room.Type,
+		Price:    req.Room.Price,
+		Bookings: []model.Booking{},
 	}
 
 	newRoom, err := h.service.CreateRoom(&room)
@@ -48,7 +48,7 @@ func (h *RoomGRPCHandler) GetRoom(ctx context.Context, req *roompb.GetRoomReques
 	}
 
 	var bookings []*roompb.Booking
-	for _, b := range room.Boockings {
+	for _, b := range room.Bookings {
 		bookings = append(bookings, &roompb.Booking{Date: b.Date})
 	}
 
@@ -71,7 +71,7 @@ func (h *RoomGRPCHandler) GetAllRooms(ctx context.Context, req *roompb.GetAllRoo
 	var roomList []*roompb.Room
 	for _, room := range rooms {
 		var bookings []*roompb.Booking
-		for _, b := range room.Boockings {
+		for _, b := range room.Bookings {
 			bookings = append(bookings, &roompb.Booking{Date: b.Date})
 		}
 		roomList = append(roomList, &roompb.Room{
@@ -98,7 +98,7 @@ func (h *RoomGRPCHandler) UpdatePrice(ctx context.Context, req *roompb.UpdatePri
 	}
 
 	var bookings []*roompb.Booking
-	for _, b := range room.Boockings {
+	for _, b := range room.Bookings {
 		bookings = append(bookings, &roompb.Booking{Date: b.Date})
 	}
 
@@ -124,7 +124,7 @@ func (h *RoomGRPCHandler) AddBooking(ctx context.Context, req *roompb.AddBooking
 	}
 
 	var bookings []*roompb.Booking
-	for _, b := range room.Boockings {
+	for _, b := range room.Bookings {
 		bookings = append(bookings, &roompb.Booking{Date: b.Date})
 	}
 
@@ -150,7 +150,7 @@ func (h RoomGRPCHandler) DeleteBooking(ctx context.Context, req *roompb.DeleteBo
 	}
 
 	var bookings []*roompb.Booking
-	for _, b := range room.Boockings {
+	for _, b := range room.Bookings {
 		bookings = append(bookings, &roompb.Booking{Date: b.Date})
 	}
 
