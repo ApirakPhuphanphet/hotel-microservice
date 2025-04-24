@@ -127,3 +127,19 @@ func (s *UserGRPCHandler) DeleteUser(ctx context.Context, req *userpb.DeleteUser
 		Deleted: true,
 	}, nil
 }
+
+func (s *UserGRPCHandler) GetUserToLogin(ctx context.Context, req *userpb.GetUserToLoginRequest) (*userpb.GetUserToLoginResponse, error) {
+	user, err := s.service.GetUserToLogin(req.Username, req.Password)
+	if err != nil {
+		return nil, err
+	}
+
+	return &userpb.GetUserToLoginResponse{
+		User: &userpb.User{
+			Id:       user.ID.String(),
+			Username: user.Username,
+			Role:     user.Role,
+			Password: user.Password,
+		},
+	}, nil
+}

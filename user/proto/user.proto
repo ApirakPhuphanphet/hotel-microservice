@@ -63,6 +63,15 @@ message ChangeRoleResponse {
   bool changed = 1;
 }
 
+message GetUserToLoginRequest {
+  string username = 1;
+  string password = 2;
+}
+
+message GetUserToLoginResponse {
+  User user = 1;
+}
+
 service UserService {
   rpc CreateUser(CreateUserRequest) returns (CreateUserResponse);
   rpc GetUser(GetUserRequest) returns (GetUserResponse);
@@ -70,4 +79,5 @@ service UserService {
   rpc DeleteUser(DeleteUserRequest) returns (DeleteUserResponse);
   rpc GetAllUsers(GetAllUsersRequest) returns (GetAllUsersResponse);
   rpc ChangeRole(ChangeRoleRequest) returns (ChangeRoleResponse);
+  rpc GetUserToLogin(GetUserToLoginRequest) returns (GetUserToLoginResponse);
 }

@@ -21,12 +21,13 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	UserService_CreateUser_FullMethodName  = "/user.UserService/CreateUser"
-	UserService_GetUser_FullMethodName     = "/user.UserService/GetUser"
-	UserService_UpdateUser_FullMethodName  = "/user.UserService/UpdateUser"
-	UserService_DeleteUser_FullMethodName  = "/user.UserService/DeleteUser"
-	UserService_GetAllUsers_FullMethodName = "/user.UserService/GetAllUsers"
-	UserService_ChangeRole_FullMethodName  = "/user.UserService/ChangeRole"
+	UserService_CreateUser_FullMethodName     = "/user.UserService/CreateUser"
+	UserService_GetUser_FullMethodName        = "/user.UserService/GetUser"
+	UserService_UpdateUser_FullMethodName     = "/user.UserService/UpdateUser"
+	UserService_DeleteUser_FullMethodName     = "/user.UserService/DeleteUser"
+	UserService_GetAllUsers_FullMethodName    = "/user.UserService/GetAllUsers"
+	UserService_ChangeRole_FullMethodName     = "/user.UserService/ChangeRole"
+	UserService_GetUserToLogin_FullMethodName = "/user.UserService/GetUserToLogin"
 )
 
 // UserServiceClient is the client API for UserService service.
@@ -39,6 +40,7 @@ type UserServiceClient interface {
 	DeleteUser(ctx context.Context, in *DeleteUserRequest, opts ...grpc.CallOption) (*DeleteUserResponse, error)
 	GetAllUsers(ctx context.Context, in *GetAllUsersRequest, opts ...grpc.CallOption) (*GetAllUsersResponse, error)
 	ChangeRole(ctx context.Context, in *ChangeRoleRequest, opts ...grpc.CallOption) (*ChangeRoleResponse, error)
+	GetUserToLogin(ctx context.Context, in *GetUserToLoginRequest, opts ...grpc.CallOption) (*GetUserToLoginResponse, error)
 }
 
 type userServiceClient struct {
@@ -109,6 +111,16 @@ func (c *userServiceClient) ChangeRole(ctx context.Context, in *ChangeRoleReques
 	return out, nil
 }
 
+func (c *userServiceClient) GetUserToLogin(ctx context.Context, in *GetUserToLoginRequest, opts ...grpc.CallOption) (*GetUserToLoginResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetUserToLoginResponse)
+	err := c.cc.Invoke(ctx, UserService_GetUserToLogin_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // UserServiceServer is the server API for UserService service.
 // All implementations must embed UnimplementedUserServiceServer
 // for forward compatibility.
@@ -119,6 +131,7 @@ type UserServiceServer interface {
 	DeleteUser(context.Context, *DeleteUserRequest) (*DeleteUserResponse, error)
 	GetAllUsers(context.Context, *GetAllUsersRequest) (*GetAllUsersResponse, error)
 	ChangeRole(context.Context, *ChangeRoleRequest) (*ChangeRoleResponse, error)
+	GetUserToLogin(context.Context, *GetUserToLoginRequest) (*GetUserToLoginResponse, error)
 	mustEmbedUnimplementedUserServiceServer()
 }
 
@@ -146,6 +159,9 @@ func (UnimplementedUserServiceServer) GetAllUsers(context.Context, *GetAllUsersR
 }
 func (UnimplementedUserServiceServer) ChangeRole(context.Context, *ChangeRoleRequest) (*ChangeRoleResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ChangeRole not implemented")
+}
+func (UnimplementedUserServiceServer) GetUserToLogin(context.Context, *GetUserToLoginRequest) (*GetUserToLoginResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetUserToLogin not implemented")
 }
 func (UnimplementedUserServiceServer) mustEmbedUnimplementedUserServiceServer() {}
 func (UnimplementedUserServiceServer) testEmbeddedByValue()                     {}
@@ -276,6 +292,24 @@ func _UserService_ChangeRole_Handler(srv interface{}, ctx context.Context, dec f
 	return interceptor(ctx, in, info, handler)
 }
 
+func _UserService_GetUserToLogin_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetUserToLoginRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).GetUserToLogin(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UserService_GetUserToLogin_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).GetUserToLogin(ctx, req.(*GetUserToLoginRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // UserService_ServiceDesc is the grpc.ServiceDesc for UserService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -306,6 +340,10 @@ var UserService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "ChangeRole",
 			Handler:    _UserService_ChangeRole_Handler,
+		},
+		{
+			MethodName: "GetUserToLogin",
+			Handler:    _UserService_GetUserToLogin_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

@@ -38,6 +38,9 @@ func (s *UserService) CreateUser(user *model.User) error {
 func (s *UserService) GetUserByID(id interface{}) (model.User, error) {
 	var user model.User
 	ID, err := primitive.ObjectIDFromHex(id.(string))
+	if err != nil {
+		return model.User{}, err
+	}
 	user, err = s.repository.FindUserByID(ID)
 	if err != nil {
 		return model.User{}, err
@@ -56,6 +59,9 @@ func (s *UserService) GetAllUsers() ([]model.User, error) {
 func (s *UserService) UpdateUser(id interface{}, update *model.User) error {
 	var user model.User
 	ID, err := primitive.ObjectIDFromHex(id.(string))
+	if err != nil {
+		return err
+	}
 	user, err = s.repository.FindUserByID(ID)
 	// If the user does not exist, return an error
 	if err != nil {
@@ -91,6 +97,9 @@ func (s *UserService) UpdateUser(id interface{}, update *model.User) error {
 
 func (s *UserService) ChangeRole(id interface{}, role string) error {
 	ID, err := primitive.ObjectIDFromHex(id.(string))
+	if err != nil {
+		return err
+	}
 	user, err := s.repository.FindUserByID(ID)
 	if err != nil {
 		return err
@@ -109,6 +118,9 @@ func (s *UserService) ChangeRole(id interface{}, role string) error {
 
 func (s *UserService) DeleteUser(id interface{}) error {
 	ID, err := primitive.ObjectIDFromHex(id.(string))
+	if err != nil {
+		return err
+	}
 	_, err = s.repository.FindUserByID(ID)
 	if err != nil {
 		err = errors.New("user not found")
@@ -116,4 +128,13 @@ func (s *UserService) DeleteUser(id interface{}) error {
 	}
 	err = s.repository.DeleteUser(ID)
 	return err
+}
+
+func (s *UserService) GetUserToLogin(username, password string) (model.User, error) {
+	var user model.User
+	user, err := s.repository.FindUserByUsername(username)
+	if err != nil {
+		return model.User{}, err
+	}
+	return user, nil
 }
