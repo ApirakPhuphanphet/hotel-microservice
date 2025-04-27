@@ -1,0 +1,26 @@
+syntax = "proto3";
+
+package auth;
+option go_package = "/proto;authpb";
+
+message loginRequest {
+    string username = 1;
+    string password = 2;
+}
+
+message loginResponse {
+    string token = 1; 
+}
+
+message tokenValidationRequest {
+    string token = 1;
+}
+
+message tokenValidationResponse {
+    string userValidated = 1;
+}
+
+service AuthService {
+    rpc Login(loginRequest) returns (loginResponse);
+    rpc TokenValidation(tokenValidationRequest) returns (tokenValidationResponse);
+}
