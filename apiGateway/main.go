@@ -4,6 +4,8 @@ import (
 	"log"
 	"strconv"
 
+	"github.com/ApirakPhuphanphet/hotel-microservice/authService"
+	authpb "github.com/ApirakPhuphanphet/hotel-microservice/authService/proto"
 	"github.com/ApirakPhuphanphet/hotel-microservice/roomService"
 	roompb "github.com/ApirakPhuphanphet/hotel-microservice/roomService/proto"
 	"github.com/ApirakPhuphanphet/hotel-microservice/userService"
@@ -21,7 +23,7 @@ func main() {
 	defer userConn.Close()
 	userClient := userpb.NewUserServiceClient(userConn)
 
-	// Connect to the user service
+	// Connect to the room service
 	roomConn, err := grpc.Dial("localhost:50052", grpc.WithInsecure())
 	if err != nil {
 		log.Fatalf("did not connect: %v", err)
@@ -29,11 +31,53 @@ func main() {
 	defer roomConn.Close()
 	roomClient := roompb.NewRoomServiceClient(roomConn)
 
+	// Connect to the auth service
+	authConn, err := grpc.Dial("localhost:50053", grpc.WithInsecure())
+	if err != nil {
+		log.Fatalf("did not connect: %v", err)
+	}
+	defer authConn.Close()
+	authClient := authpb.NewAuthServiceClient(authConn)
+
 	app := fiber.New()
+	// Handler orther services
 	userHandler(app, userClient)
 	roomHandler(app, roomClient)
+	authHandler(app, authClient)
 
 	app.Listen(":3000")
+}
+
+func authHandler(app *fiber.App, authClient authpb.AuthServiceClient) {
+	app.Post("/auth", func(c *fiber.Ctx) error {
+		var user authpb.LoginRequest
+		if err := c.BodyParser(&user); err != nil {
+			return err
+		}
+
+		token, err := authService.Login(user.Username, user.Password, authClient)
+		if err != nil {
+			return err
+		}
+
+		return c.JSON(fiber.Map{
+			"token": token,
+		})
+	})
+
+	app.Post("auth/validate", func(c *fiber.Ctx) error {
+		var token string
+		if err := c.BodyParser(&token); err != nil {
+			return err
+		}
+
+		userValidate, err := authService.TokenValidation(token, authClient)
+		if err != nil {
+			return err
+		}
+
+		return c.JSON(userValidate)
+	})
 }
 
 func roomHandler(app *fiber.App, grpcRoomClient roompb.RoomServiceClient) {
