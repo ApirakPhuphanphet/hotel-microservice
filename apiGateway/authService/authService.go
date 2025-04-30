@@ -3,12 +3,13 @@ package authService
 import (
 	"context"
 	"encoding/json"
+	"log"
 
 	authpb "github.com/ApirakPhuphanphet/hotel-microservice/authService/proto"
 )
 
-type userValidate struct {
-	Exp      string
+type UserValidate struct {
+	Exp      int64
 	Role     string
 	Username string
 }
@@ -27,12 +28,12 @@ func Login(username string, password string, client authpb.AuthServiceClient) (s
 	return res.Token, err
 }
 
-func TokenValidation(token string, client authpb.AuthServiceClient) (userValidate, error) {
+func TokenValidation(token string, client authpb.AuthServiceClient) (UserValidate, error) {
 	req := authpb.TokenValidationRequest{
 		Token: token,
 	}
-	userValidated := userValidate{
-		Exp:      "",
+	userValidated := UserValidate{
+		Exp:      0,
 		Role:     "",
 		Username: "",
 	}
@@ -42,10 +43,9 @@ func TokenValidation(token string, client authpb.AuthServiceClient) (userValidat
 		return userValidated, err
 	}
 	err = json.Unmarshal([]byte(res.UserValidated), &userValidated)
-
 	if err != nil {
 		return userValidated, err
 	}
-
+	log.Print(userValidated)
 	return userValidated, nil
 }
